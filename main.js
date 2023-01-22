@@ -1,78 +1,101 @@
-import https from "https";
-import fs from "fs/promises";
-import axios from "axios";
-import config from "./config.json" assert { type: "json" };
+import dayjs from "dayjs";
 
-const cert = await fs.readFile("./data/overkiz-root-ca-2048.crt", "utf8");
+// Local modules
+import * as dlc from "./daylight-cycles.js";
+import * as tahoma from "./tahoma.js";
 
-const suff = config.gatewaySuffix ?? "local";
-const port = config.port ?? 8443;
+await autoDaylightBlinds();
 
-const host = `https://gateway-${config.pod}.${suff}:${port}`;
-
-const tahoma = axios.create({
-  baseURL: host,
-  timeout: 1000,
-  headers: { Authorization: `Bearer ${config.token}` },
-  httpsAgent: new https.Agent({
-    // enabling the following cert causes ERR_TLS_CERT_ALTNAME_INVALID to happen when ran
-    // ca: cert,
-    rejectUnauthorized: false,
-  }),
-});
-
-console.log("Everything will close at night time!");
-while (true) {
-  if (isItNight()) {
-    // console.log("ITS ALL GOING DOWN!!!!");
-    // const devices = await getDevices();
-    // await execAllBlinds(devices, "down");
-    break;
-  }
-}
-
-async function getDevices() {
-  try {
-    const response = await tahoma.get("/enduser-mobile-web/1/enduserAPI/setup");
-    return response.data.devices;
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-async function execAllBlinds(devices, cmd) {
-  const blinds = devices.filter(
-    (dev) =>
-      dev.definition.widgetName ===
-      "PositionableRollerShutterWithLowSpeedManagement"
+async function autoDaylightBlinds() {
+  console.log(
+    `[${dayjs().format(
+      "DD/MM/YYYY HH:mm:ss"
+    )}] Starting auto daylight shutter manager`
   );
+  // password must be inputted, if wrong password, throw
 
-  const actions = [];
-  for (let bl of blinds) {
-    actions.push({
-      commands: [
-        {
-          name: cmd,
-          parameters: [],
-        },
-      ],
-      deviceURL: bl.deviceURL,
-    });
-    console.log(`Closing "${bl.label}"...`);
+  // get all controllable blinds and filter only ones that are allowed to follow daylight cycle (DLC blinds)
+  // first check states of all DLC blinds:
+  // - DLC blinds that are closed even though it is day should be open
+  // - DLC blinds that are open even though it is night should be closed
+  // open/close blinds that have the wrong state
+
+  while (true) {
+    const todState = dlc.getTodayState();
+
+    switch (todState) {
+      case dlc.DayState.Sunrise:
+        // Get all shutters that are not moving and that are closed
+        const idleClosedShutters = (await getTargetedShutters()).filter(
+          (shutter) => {
+            const openClose = tahoma.getState(
+              shutter,
+              tahoma.DeviceState.OpenCloseStr
+            )?.value;
+
+            return openClose === "closed";
+          }
+        );
+
+        if (idleClosedShutters.length > 0) {
+          console.log(
+            `[${dayjs().format("DD/MM/YYYY HH:mm:ss")}] The ☀️ is rising! ${
+              idleClosedShutters.length
+            } shutters are about to open...`
+          );
+          await tahoma.execAll(idleClosedShutters, "up");
+        }
+        break;
+      case dlc.DayState.Sunset:
+        // Get all shutters that are not moving and that are open
+        const idleOpenShutters = (await getTargetedShutters()).filter(
+          (shutter) => {
+            const openClose = tahoma.getState(
+              shutter,
+              tahoma.DeviceState.OpenCloseStr
+            )?.value;
+
+            return openClose === "open";
+          }
+        );
+
+        if (idleOpenShutters.length > 0) {
+          console.log(
+            `[${dayjs().format(
+              "DD/MM/YYYY HH:mm:ss"
+            )}] The 🌙 is lighting up the dark! ${
+              idleOpenShutters.length
+            } shutters are about to be closed...`
+          );
+          await tahoma.execAll(idleOpenShutters, "down");
+        }
+        break;
+      case dlc.DayState.Day:
+      case dlc.DayState.Night:
+        break;
+      default:
+        throw new Error(`Unknown day state: ${todState}`);
+    }
+
+    // Pause the script for 30 seconds between each check
+    await new Promise((resolve) => setTimeout(resolve, 30000));
   }
-
-  tahoma.post("/enduser-mobile-web/1/enduserAPI/exec/apply", {
-    label: `On all: ${cmd}`,
-    actions: actions,
-  });
 }
 
-function isItNight() {
-  const night = [17, 45];
+async function getTargetedShutters(onlyIdle = true) {
+  // Following three lines are for testing only
+  const testShutter = await tahoma.GetDeviceFromConfig("shutter_my_room");
+  if (!testShutter) return [];
 
-  const now = new Date();
-  const hours = now.getHours();
-  const mins = now.getMinutes();
+  let devices = [testShutter];
 
-  return hours > night[0] || (hours === night[0] && mins >= night[1]);
+  // let devices = await tahoma.getDevices();
+
+  if (onlyIdle) {
+    devices = devices.filter(
+      (d) => tahoma.getState(d, tahoma.DeviceState.MovingBool)?.value === false
+    );
+  }
+
+  return devices;
 }
