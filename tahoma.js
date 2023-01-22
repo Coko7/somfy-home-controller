@@ -2,7 +2,8 @@ import https from "https";
 import axios from "axios";
 import fs from "fs/promises";
 
-const CONFIG = await fs.readFile("./config.json", "utf-8");
+const rawConfig = await fs.readFile("./config.json", "utf-8");
+const CONFIG = JSON.parse(rawConfig);
 
 // const cert = await fs.readFile("./data/overkiz-root-ca-2048.crt", "utf8");
 
