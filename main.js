@@ -84,12 +84,12 @@ async function autoDaylightBlinds() {
 
 async function getTargetedShutters(onlyIdle = true) {
   // Following three lines are for testing only
-  const testShutter = await tahoma.GetDeviceFromConfig("shutter_my_room");
-  if (!testShutter) return [];
+  // const testShutter = await tahoma.GetDeviceFromConfig("shutter_my_room");
+  // if (!testShutter) return [];
 
-  let devices = [testShutter];
+  // let devices = [testShutter];
 
-  // let devices = await tahoma.getDevices();
+  let devices = await tahoma.getDevices();
 
   if (onlyIdle) {
     devices = devices.filter(
