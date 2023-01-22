@@ -2,15 +2,14 @@ import https from "https";
 import axios from "axios";
 import fs from "fs/promises";
 
-// Local modules
-import config from "./config.json" assert { type: "json" };
+const CONFIG = await fs.readFile("./config.json", "utf-8");
 
 // const cert = await fs.readFile("./data/overkiz-root-ca-2048.crt", "utf8");
 
-const suff = config.gatewaySuffix ?? "local";
-const port = config.port ?? 8443;
+const suff = CONFIG.gatewaySuffix ?? "local";
+const port = CONFIG.port ?? 8443;
 
-const host = `https://gateway-${config.pod}.${suff}:${port}`;
+const host = `https://gateway-${CONFIG.pod}.${suff}:${port}`;
 
 export const DeviceType = {
   RollerShutter: "io:RollerShutterWithLowSpeedManagementIOComponent",
@@ -28,7 +27,7 @@ export const DeviceState = {
 const tahoma = axios.create({
   baseURL: host,
   timeout: 1000,
-  headers: { Authorization: `Bearer ${config.token}` },
+  headers: { Authorization: `Bearer ${CONFIG.token}` },
   httpsAgent: new https.Agent({
     // enabling the following cert causes ERR_TLS_CERT_ALTNAME_INVALID to happen when ran
     // ca: cert,
@@ -50,7 +49,7 @@ export async function getDevices(typeFilter = null) {
 }
 
 export async function GetDeviceFromConfig(id) {
-  const device = config.devices.find((d) => d.id === id);
+  const device = CONFIG.devices.find((d) => d.id === id);
   if (!device) return null;
 
   return getDevice(device.url);
@@ -113,4 +112,8 @@ export async function execAll(devices, cmd) {
     label: `Exec ${cmd} on ${devices.length} devices`,
     actions: allActions,
   });
+}
+
+export function getConfig() {
+  return CONFIG;
 }
