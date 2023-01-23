@@ -29,7 +29,7 @@ export const DayState = {
 };
 
 export function getTodayState() {
-  const now = dayjs("17:28", "HH:mm");
+  const now = dayjs();
   const todayCycle = getTodayCycle();
 
   const sunrise = dayjs(todayCycle?.tsr, "HH:mm");
