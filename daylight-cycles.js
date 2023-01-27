@@ -32,7 +32,13 @@ export function getTodayState() {
   const now = dayjs();
   const todayCycle = getTodayCycle();
 
-  const sunrise = dayjs(todayCycle?.tsr, "HH:mm");
+  const dayOfWeek = now.day();
+  const isWeekend = (dayOfWeek === 6) || (dayOfWeek  === 0);
+
+  let sunrise = dayjs(todayCycle?.tsr, "HH:mm");
+  if (isWeekend)
+    sunrise = sunrise.add(30, "minute");
+
   const sunset = dayjs(todayCycle?.tss, "HH:mm");
 
   const sunrise2 = sunrise.add(1, "minute");
