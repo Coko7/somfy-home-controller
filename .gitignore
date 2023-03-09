@@ -105,4 +105,4 @@ dist
 
 # Personal data & credentials
 data/
-config.json
+shc-config.json

@@ -1,34 +1,34 @@
-import https from "https";
-import axios from "axios";
-import fs from "fs/promises";
+import https from 'https';
+import axios from 'axios';
 
-const rawConfig = await fs.readFile("./config.json", "utf-8");
-const CONFIG = JSON.parse(rawConfig);
+// local module
+import * as cfg from './config.js';
+const AppConfig = cfg.getConfig();
 
 // const cert = await fs.readFile("./data/overkiz-root-ca-2048.crt", "utf8");
 
-const suff = CONFIG.gatewaySuffix ?? "local";
-const port = CONFIG.port ?? 8443;
+const gatewaySuffix = AppConfig.gatewaySuffix ?? 'local';
+const port = AppConfig.port ?? 8443;
 
-const host = `https://gateway-${CONFIG.pod}.${suff}:${port}`;
+const host = `https://gateway-${AppConfig.pod}.${gatewaySuffix}:${port}`;
 
 export const DeviceType = {
-  RollerShutter: "io:RollerShutterWithLowSpeedManagementIOComponent",
-  GarageDoor: "io:GarageOpenerIOComponent",
+  RollerShutter: 'io:RollerShutterWithLowSpeedManagementIOComponent',
+  GarageDoor: 'io:GarageOpenerIOComponent',
 };
 
 export const DeviceState = {
-  StatusStr: "core:StatusState",
-  OpenCloseStr: "core:OpenClosedState",
-  ClosureInt: "core:ClosureState",
-  MovingBool: "core:MovingState",
-  NameStr: "core:NameState",
+  StatusStr: 'core:StatusState',
+  OpenCloseStr: 'core:OpenClosedState',
+  ClosureInt: 'core:ClosureState',
+  MovingBool: 'core:MovingState',
+  NameStr: 'core:NameState',
 };
 
 const tahoma = axios.create({
   baseURL: host,
   timeout: 1000,
-  headers: { Authorization: `Bearer ${CONFIG.token}` },
+  headers: { Authorization: `Bearer ${AppConfig.token}` },
   httpsAgent: new https.Agent({
     // enabling the following cert causes ERR_TLS_CERT_ALTNAME_INVALID to happen when ran
     // ca: cert,
@@ -38,7 +38,7 @@ const tahoma = axios.create({
 
 export async function getDevices(typeFilter = null) {
   try {
-    const response = await tahoma.get("/enduser-mobile-web/1/enduserAPI/setup");
+    const response = await tahoma.get('/enduser-mobile-web/1/enduserAPI/setup');
     let devices = response.data.devices;
     if (typeFilter) {
       devices = devices.filter((d) => d.controllableName === typeFilter);
@@ -50,7 +50,7 @@ export async function getDevices(typeFilter = null) {
 }
 
 export async function GetDeviceFromConfig(id) {
-  const device = CONFIG.devices.find((d) => d.id === id);
+  const device = AppConfig.devices.find((d) => d.id === id);
   if (!device) return null;
 
   return getDevice(device.url);
@@ -76,7 +76,7 @@ export function getState(device, stateName) {
 
 export async function exec(device, cmd) {
   console.log(`Executing '${cmd}' on "${device.label}"...`);
-  await tahoma.post("/enduser-mobile-web/1/enduserAPI/exec/apply", {
+  await tahoma.post('/enduser-mobile-web/1/enduserAPI/exec/apply', {
     label: `Exec ${cmd} on '${device.label}'`,
     actions: [
       {
@@ -109,12 +109,8 @@ export async function execAll(devices, cmd) {
     console.log(`Executing '${cmd}' on "${dev.label}"...`);
   }
 
-  await tahoma.post("/enduser-mobile-web/1/enduserAPI/exec/apply", {
+  await tahoma.post('/enduser-mobile-web/1/enduserAPI/exec/apply', {
     label: `Exec ${cmd} on ${devices.length} devices`,
     actions: allActions,
   });
-}
-
-export function getConfig() {
-  return CONFIG;
 }
