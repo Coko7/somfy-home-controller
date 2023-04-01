@@ -71,7 +71,7 @@ export function getSchedule(time, location) {
   }
 
   // It takes about 30 minutes to get full dark after the sunset
-  const canShutterCloseFrom = dayjs(dayEvents?.sunset).add(30, 'minute');
+  const canShutterCloseFrom = dayjs(dayEvents?.sunset).add(15, 'minute');
 
   const canShutterOpenTo = canShutterOpenFrom.add(2, 'minute');
   const canShutterCloseTo = canShutterCloseFrom.add(2, 'minute');
