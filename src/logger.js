@@ -1,7 +1,7 @@
 import { createLogger, format, transports } from 'winston';
 import * as fs from 'fs';
 
-const logsLocation = '../logs/';
+const logsLocation = './logs/';
 
 if (!fs.existsSync(logsLocation)){
   fs.mkdirSync(logsLocation);
