@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 // Local modules
 import * as st from './sun-tracker.js';
 import * as tahoma from './tahoma.js';
+import logger from './logger.js';
 
 // How much time to wait before checking again for possible events. Expressed in milliseconds.
 const EVENT_CHECK_TIMEOUT = 30 * 1000;
@@ -10,11 +11,10 @@ const EVENT_CHECK_TIMEOUT = 30 * 1000;
 await autoDaylightBlinds();
 
 async function autoDaylightBlinds() {
-  console.log(
-    `[${dayjs().format(
-      'DD/MM/YYYY HH:mm:ss'
-    )}] Starting auto daylight shutter manager`
-  );
+  logger.log({
+    level: 'info',
+    message: 'Starting auto daylight shutter manager',
+  });
   // password must be inputted, if wrong password, throw
 
   // get all controllable blinds and filter only ones that are allowed to follow daylight cycle (DLC blinds)
@@ -57,11 +57,10 @@ async function OpenAllShutters() {
   });
 
   if (idleClosedShutters.length > 0) {
-    console.log(
-      `[${dayjs().format('DD/MM/YYYY HH:mm:ss')}] The ☀️ is rising! ${
-        idleClosedShutters.length
-      } shutters are about to open...`
-    );
+    logger.log({
+      level: 'info',
+      message: `The ☀️ is rising! ${idleClosedShutters.length} shutters are about to open...`,
+    });
     await tahoma.execAll(idleClosedShutters, 'up');
   }
 }
@@ -78,13 +77,10 @@ async function CloseAllShutters() {
   });
 
   if (idleOpenShutters.length > 0) {
-    console.log(
-      `[${dayjs().format(
-        'DD/MM/YYYY HH:mm:ss'
-      )}] The 🌙 is lighting up the dark! ${
-        idleOpenShutters.length
-      } shutters are about to be closed...`
-    );
+    logger.log({
+      level: 'info',
+      message: `The 🌙 is lighting up the dark! ${idleOpenShutters.length} shutters are about to be closed...`,
+    });
     await tahoma.execAll(idleOpenShutters, 'down');
   }
 }

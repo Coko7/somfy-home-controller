@@ -2,6 +2,7 @@ import https from 'https';
 import axios from 'axios';
 
 // local module
+import logger from './logger.js';
 import * as cfg from './config.js';
 const AppConfig = cfg.getConfig();
 
@@ -45,7 +46,10 @@ export async function getDevices(typeFilter = null) {
     }
     return devices;
   } catch (err) {
-    console.error(`Failed to get all devices: ${err}`);
+    logger.log({
+      level: 'error',
+      message: `Failed to get all devices: ${err}`,
+    });
   }
 }
 
@@ -64,9 +68,10 @@ export async function getDevice(deviceUrl) {
     );
     return response.data;
   } catch (err) {
-    console.error(
-      `Failed to get single device with URL '${deviceUrl}': ${err}`
-    );
+    logger.log({
+      level: 'error',
+      message: `Failed to get single device with URL '${deviceUrl}': ${err}`,
+    });
   }
 }
 
@@ -75,7 +80,11 @@ export function getState(device, stateName) {
 }
 
 export async function exec(device, cmd) {
-  console.log(`Executing '${cmd}' on "${device.label}"...`);
+  logger.log({
+    level: 'info',
+    message: `Executing '${cmd}' on "${device.label}"...`,
+  });
+
   await tahoma.post('/enduser-mobile-web/1/enduserAPI/exec/apply', {
     label: `Exec ${cmd} on '${device.label}'`,
     actions: [
@@ -106,7 +115,11 @@ export async function execAll(devices, cmd) {
       ],
       deviceURL: dev.deviceURL,
     });
-    console.log(`Executing '${cmd}' on "${dev.label}"...`);
+
+    logger.log({
+      level: 'info',
+      message: `Executing '${cmd}' on "${dev.label}"...`,
+    });
   }
 
   await tahoma.post('/enduser-mobile-web/1/enduserAPI/exec/apply', {
