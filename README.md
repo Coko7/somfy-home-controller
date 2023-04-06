@@ -20,7 +20,7 @@ I am not a Node expert so maybe there is a cleaner way to handle JSON file impor
   "gatewaySuffix": "home",
   "token": "PUT_YOUR_SUPER_SECRET_TOKEN_HERE",
   "location": {
-    "latitude": 0.0
+    "latitude": 0.0,
     "longitude": 0.0,
     "altitude": 0,
     "timezone": "Europe/Paris"
@@ -50,7 +50,12 @@ I am not a Node expert so maybe there is a cleaner way to handle JSON file impor
 3. Set the `pod` and `token` to link to your local Tahoma API
 4. Fill in the location data with (`altitude` and `timezone` are optional). *But timezone is not supported yet anyway...*
 5. Setup the devices you want to control automatically. Only shutters are supported.
-6. Once your config file is all set, you can test the script with `npm start`. But if you want to have this script running all day, you might want to use actual libraries such as [pm2](https://www.npmjs.com/package/pm2) or [forever](https://www.npmjs.com/package/forever).
+6. Once your config file is all set, you can test the script with `npm start`. But if you want to have this script running all day, you might want to use actual libraries such as [pm2](https://www.npmjs.com/package/pm2) or [forever](https://www.npmjs.com/package/forever). In case you are using pm2, you can start the script in background like this:
+
+    ```bash
+    pm2 start npm --name "my-somfy-home-controller" -- start 
+    ```
+
 
 ## Resources
 
