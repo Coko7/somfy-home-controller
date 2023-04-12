@@ -25,6 +25,13 @@ export const ShutterSchedule = {
   Closed: 3,
 };
 
+// export const ScheduledActions = {
+//   ShouldOpen: 0,
+//   DoNothingOpen: 1,
+//   ShouldClose: 2,
+//   DoNothingClose: 3
+// }
+
 export function getTimes(date, location) {
   return SunCalc.getTimes(
     date,
@@ -40,63 +47,91 @@ export function getTodayTimes() {
   return getTimes(today, AppConfig.location);
 }
 
-export function getSchedule(time, location) {
-  const timeJS = dayjs(time);
-  const dayEvents = getTimes(time, location);
+function getEvents(date, location) {
+  const dateJS = dayjs(date);
+  const times = getTimes(date, location);
 
   // Shutters cannot open earlier than these times
   // Please note that both of these times are compliant to the 7ime convention: https://corentin-humbert.fr/projects/seventime/
-  const minOpenTime = timeJS.set('hour', 7).set('minute', 0).set('second', 0);
-  const minOpenTimeWeekend = timeJS
+  const minOpenTime = dateJS.set('hour', 7).set('minute', 0).set('second', 0);
+  const minOpenTimeWeekend = dateJS
     .set('hour', 9)
     .set('minute', 7)
     .set('second', 0);
 
-  const dayOfWeek = timeJS.day();
+  const dayOfWeek = dateJS.day();
   const isWeekend = dayOfWeek === 6 || dayOfWeek === 0;
 
-  let canShutterOpenFrom = dayjs(dayEvents?.sunriseEnd);
+  let shutterCanOpenFrom = dayjs(times?.sunriseEnd);
 
   // Custom opening time for the weekend
   if (isWeekend) {
-    if (canShutterOpenFrom.isBefore(minOpenTimeWeekend))
-      canShutterOpenFrom = minOpenTimeWeekend;
+    if (shutterCanOpenFrom.isBefore(minOpenTimeWeekend))
+      shutterCanOpenFrom = minOpenTimeWeekend;
 
     // Alternative: add 90 minutes to initial time
     // canShutterOpenFrom = canShutterOpenFrom.add(90, 'minute');
   } else {
     // Even during the week, we don't want to wake too early.
-    if (canShutterOpenFrom.isBefore(minOpenTime))
-      canShutterOpenFrom = minOpenTime;
+    if (shutterCanOpenFrom.isBefore(minOpenTime))
+      shutterCanOpenFrom = minOpenTime;
   }
 
   // It takes about 30 minutes to get full dark after the sunset
-  const canShutterCloseFrom = dayjs(dayEvents?.sunset).add(15, 'minute');
+  const shutterCanCloseFrom = dayjs(times?.sunset).add(15, 'minute');
 
-  const canShutterOpenTo = canShutterOpenFrom.add(2, 'minute');
-  const canShutterCloseTo = canShutterCloseFrom.add(2, 'minute');
+  const shutterCanOpenUntil = shutterCanOpenFrom.add(2, 'minute');
+  const shutterCanCloseUntil = shutterCanCloseFrom.add(2, 'minute');
 
-  if (
-    timeJS.isSameOrAfter(canShutterOpenFrom) &&
-    timeJS.isBefore(canShutterOpenTo)
-  )
+  return {
+    opening: [shutterCanOpenFrom, shutterCanOpenUntil],
+    closing: [shutterCanCloseFrom, shutterCanCloseUntil],
+  };
+}
+
+export function getSchedule(date, location) {
+  const today = dayjs(date);
+  const tomorrow = today.add(1, 'day');
+
+  const todayEvents = getEvents(today, location);
+  const tomorrowEvents = getEvents(tomorrow, location);
+
+  return {
+    today: {
+      opening: todayEvents.opening,
+      closing: todayEvents.closing,
+    },
+    tomorrow: {
+      opening: tomorrowEvents.opening,
+      closing: tomorrowEvents.closing,
+    },
+  };
+}
+
+export function getAction(time, location) {
+  const timeJS = dayjs(time);
+
+  const dayEvents = getEvents(time, location);
+  const opening = dayEvents.opening;
+  const closing = dayEvents.closing;
+
+  if (timeJS.isSameOrAfter(opening[0]) && timeJS.isBefore(opening[1])) {
     return ShutterSchedule.OpeningTime;
-  if (
-    timeJS.isSameOrAfter(canShutterCloseFrom) &&
-    timeJS.isBefore(canShutterCloseTo)
-  )
+  }
+
+  if (timeJS.isSameOrAfter(closing[0]) && timeJS.isBefore(closing[1])) {
     return ShutterSchedule.ClosingTime;
-  if (
-    timeJS.isBefore(canShutterOpenFrom) ||
-    timeJS.isSameOrAfter(canShutterCloseTo)
-  )
+  }
+
+  if (timeJS.isBefore(opening[0]) || timeJS.isSameOrAfter(closing[1])) {
     return ShutterSchedule.Closed;
+  }
 
   return ShutterSchedule.Open;
 }
 
-export function getTodaySchedule() {
+export function getCurrentAction() {
   const now = new Date();
 
-  return getSchedule(now, AppConfig.location);
+  return getAction(now, AppConfig.location);
 }

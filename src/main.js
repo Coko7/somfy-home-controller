@@ -24,7 +24,7 @@ async function autoDaylightBlinds() {
   // open/close blinds that have the wrong state
 
   while (true) {
-    const schedState = st.getTodaySchedule();
+    const schedState = st.getCurrentAction();
 
     switch (schedState) {
       case st.ShutterSchedule.OpeningTime:
