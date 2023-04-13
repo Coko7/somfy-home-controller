@@ -29,7 +29,7 @@ export const ShutterSchedule = {
 //   ShouldOpen: 0,
 //   DoNothingOpen: 1,
 //   ShouldClose: 2,
-//   DoNothingClose: 3
+//   DoNothingClosed: 3
 // }
 
 export function getTimes(date, location) {

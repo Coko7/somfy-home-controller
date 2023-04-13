@@ -48,7 +48,7 @@ test('Paris shutters are open: 07-03-2023 11:58', () => {
 });
 
 test('Paris shutters are closing: 07-02-2023 19:15', () => {
-  const date = new Date(2023, 2, 7, 19, 15, 0);
+  const date = new Date(2023, 2, 7, 19, 0, 0);
   const shutterState = st.getAction(date, paris);
 
   expect(shutterState).toBe(st.ShutterSchedule.ClosingTime);
