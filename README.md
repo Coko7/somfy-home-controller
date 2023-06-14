@@ -1,14 +1,14 @@
-# somfy-home-controller
+# 🏠 somfy-home-controller
 
 Simple Node app to automatically control your Somfy shutters based on your local day cycle.
 
-## Requirements
+## 🧰 Requirements
 
 Make sure you have Node.js v16.18.0 installed. This project uses [Import Assertions](https://nodejs.org/api/esm.html#json-modules) and when I tested with Node v16.**14**.0 it did not work, so I had to upgrade to v16.**18**.0.
 
 I am not a Node expert so maybe there is a cleaner way to handle JSON file import within an ES6 module but this is working for now.
 
-## Setup
+## 🛠️ Setup
 
 1. Clone the repository and open it `cd somfy-home-controller`
 2. Add a new file `shc-config.json` at the project root:
@@ -57,7 +57,7 @@ I am not a Node expert so maybe there is a cleaner way to handle JSON file impor
     ```
 
 
-## Resources
+## 📚 Resources
 
 - GitHub repo of [Somfy-TaHoma-Developer-Mode](https://github.com/Somfy-Developer/Somfy-TaHoma-Developer-Mode)
 - Swagger UI for [local gateway API](https://somfy-developer.github.io/Somfy-TaHoma-Developer-Mode/)
