@@ -60,8 +60,9 @@ I am not a Node expert so maybe there is a cleaner way to handle JSON file impor
 
 It is also possible to use a CLI to manually interact with the Tahoma box.
 To launch the CLI, simply enter `npm run cli` in your shell.
-It should launch the CLI and allow you to use commands.
+Here is what the latest version of the CLI looks like:
 
+![image](https://github.com/Coko7/somfy-home-controller/assets/91132775/6d2fcec0-5411-46cd-b73c-887b42ac2791)
 
 ## 📚 Resources
 
