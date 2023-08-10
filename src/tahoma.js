@@ -1,7 +1,7 @@
 import https from 'https';
 import axios from 'axios';
 
-// local module
+// Local modules
 import logger from './logger.js';
 import * as cfg from './config.js';
 const AppConfig = cfg.getConfig();

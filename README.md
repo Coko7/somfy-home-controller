@@ -56,6 +56,12 @@ I am not a Node expert so maybe there is a cleaner way to handle JSON file impor
     pm2 start npm --name "my-somfy-home-controller" -- start 
     ```
 
+## 💻 Command Line Interface
+
+It is also possible to use a CLI to manually interact with the Tahoma box.
+To launch the CLI, simply enter `npm run cli` in your shell.
+It should launch the CLI and allow you to use commands.
+
 
 ## 📚 Resources
 

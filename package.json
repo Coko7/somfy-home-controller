@@ -18,6 +18,7 @@
   },
   "scripts": {
     "start": "node --experimental-json-modules src/main.js",
+    "cli": "node src/cli.js",
     "test": "jest"
   }
 }
