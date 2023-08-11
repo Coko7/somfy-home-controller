@@ -6,7 +6,7 @@ import * as tahoma from './tahoma.js';
 
 const prompt = createPrompt({ sigint: true });
 
-const VERSION = '1.2.0';
+const VERSION = '1.3.0';
 const STORE = {
   devices: {
     updatedAt: null,
@@ -52,12 +52,29 @@ function displayDeviceHelp() {
   // console.log(chalk.green('<===o===o=== HELP ===o===o===>'));
   console.log('DEVICE HELP\n');
   // console.log(chalk.yellow(`Mode: DEVICE (${device.deviceURL})\n\n`));
-  console.log(`${chalk.white('down')} \texecutes "down" action on the current device\n`);
+  console.log(`${chalk.white('cmdl')} \tgives out all Somfy device commands\n`);
   console.log(`${chalk.white('exit')} \tterminates the device interactive shell\n`);
-  console.log(`${chalk.white('help')} \tshows the list of commands available for this device\n`);
+  console.log(`${chalk.white('help')} \tshows the list of CLI-specific commands\n`);
   console.log(`${chalk.white('quit')} \talias to exit\n`);
-  console.log(`${chalk.white('stop')} \texecutes "stop" action on the current device\n`);
-  console.log(`${chalk.white('up')}   \texecutes "up" action on the current device\n`);
+}
+
+function getDeviceCommands(device) {
+  return device.definition.commands;
+}
+
+function displaySomfyDeviceCommands(device) {
+  let commands = getDeviceCommands(device);
+
+  commands.sort((a, b) => {
+    if (a.commandName > b.commandName) return 1;
+    if (a.commandName < b.commandName) return -1;
+    return 0;
+  });
+
+  console.log(`${commands.length} commands available for this device:`);
+  for (const command of commands) {
+    console.log(`- ${chalk.blue(command.commandName)}${command.nparams > 0 ? chalk.blue(': ') + chalk.yellow(command.paramsSig) : ''}`);
+  }
 }
 
 async function displayInteractiveShell() {
@@ -219,7 +236,14 @@ async function parseDeviceCommand(device, command, args) {
     return 0;
   }
 
-  if (command === 'up' || command === 'down' || command === 'stop') {
+  if (command === 'cmdl') {
+    displaySomfyDeviceCommands(device);
+    return 0;
+  }
+
+  const somfyCommands = getDeviceCommands(device);
+  const somfyCmdRef = somfyCommands.find((cmd) => cmd.commandName === command);
+  if (somfyCmdRef) {
     await tahoma.exec(device, command);
     console.log(`Executed '${command}' on device ${device.label} ("${device.deviceURL}")`);
     return 0;
