@@ -6,7 +6,7 @@ import * as tahoma from './tahoma.js';
 
 const prompt = createPrompt({ sigint: true });
 
-const VERSION = '1.1.0';
+const VERSION = '1.2.0';
 const STORE = {
   devices: {
     updatedAt: null,
@@ -22,11 +22,12 @@ function outputError(errorMessage) {
 
 function displayTitleMessage() {
   console.log(
-    `${chalk.white('<===')} ${chalk.magenta('S')}${chalk.blue('omfy')} ${chalk.magenta('H')}${chalk.blue('ome')} ${chalk.magenta('C')}${chalk.blue(
+    `${chalk.white('\n<===')} ${chalk.magenta('S')}${chalk.blue('omfy')} ${chalk.magenta('H')}${chalk.blue('ome')} ${chalk.magenta('C')}${chalk.blue(
       'ontroller'
     )} - ${chalk.cyan('Interactive shell')} ${chalk.white('===>')}`
   );
-  console.log(chalk.yellow(`Version ${VERSION}\n`));
+  console.log('By ' + chalk.cyan('@Coko7') + ' - ' + chalk.yellow(`Version ${VERSION}\n`));
+  console.log('🔗 Connected to ' + chalk.green(tahoma.getGatewayHost()) + '\n');
 }
 
 function displayHelp() {
@@ -38,12 +39,13 @@ function displayHelp() {
     )}\texecute the given command on the given device identified by <devid>\n\t\t\tavailable commands: close, down, open, stop, up\n`
   );
   console.log(`${chalk.white('exit')}              \tterminates the interactive shell\n`);
+  console.log(`${chalk.white('gate')}              \toutputs the gateway url\n`);
   console.log(`${chalk.white('help')}              \tshows the list of commands\n`);
   console.log(`${chalk.white('list')}              \tget the list of all devices\n\t\t\t-s can be used to list in short format\n`);
   console.log(`${chalk.white('load')} ${chalk.red('<id>')}      \t\tlaunch interactive command shell for the given device\n`);
   console.log(`${chalk.white('quit')}              \talias to exit\n`);
   console.log(`${chalk.white('refresh')}           \trefresh the stored list of devices\n`);
-  console.log(`${chalk.white('version')}           \tOutputs the shell version to the screen\n`);
+  console.log(`${chalk.white('version')}           \toutputs the cli version to the screen\n`);
 }
 
 function displayDeviceHelp() {
@@ -104,6 +106,11 @@ async function getDevicesFromCache() {
 async function parseCommand(command, args) {
   if (command === 'help') {
     displayHelp();
+    return 0;
+  }
+
+  if (command === 'gate') {
+    console.log(tahoma.getGatewayHost());
     return 0;
   }
 

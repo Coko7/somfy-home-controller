@@ -37,6 +37,10 @@ const tahoma = axios.create({
   }),
 });
 
+export function getGatewayHost() {
+  return host;
+}
+
 export async function getDevices(typeFilter = null) {
   try {
     const response = await tahoma.get('/enduser-mobile-web/1/enduserAPI/setup');
