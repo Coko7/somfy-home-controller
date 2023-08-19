@@ -6,7 +6,7 @@ import * as tahoma from './tahoma.js';
 
 const prompt = createPrompt({ sigint: true });
 
-const VERSION = '1.3.0';
+const VERSION = '1.4.0';
 const STORE = {
   devices: {
     updatedAt: null,
@@ -22,11 +22,17 @@ function outputError(errorMessage) {
 
 function displayTitleMessage() {
   console.log(
-    `${chalk.white('\n<===')} ${chalk.magenta('S')}${chalk.blue('omfy')} ${chalk.magenta('H')}${chalk.blue('ome')} ${chalk.magenta('C')}${chalk.blue(
-      'ontroller'
-    )} - ${chalk.cyan('Interactive shell')} ${chalk.white('===>')}`
+    `${chalk.white('\n<===')} ${chalk.magenta('S')}${chalk.blue(
+      'omfy'
+    )} ${chalk.magenta('H')}${chalk.blue('ome')} ${chalk.magenta(
+      'C'
+    )}${chalk.blue('ontroller')} - ${chalk.cyan(
+      'Interactive shell'
+    )} ${chalk.white('===>')}`
   );
-  console.log('By ' + chalk.cyan('@Coko7') + ' - ' + chalk.yellow(`Version ${VERSION}\n`));
+  console.log(
+    'By ' + chalk.cyan('@Coko7') + ' - ' + chalk.yellow(`Version ${VERSION}\n`)
+  );
   console.log('🔗 Connected to ' + chalk.green(tahoma.getGatewayHost()) + '\n');
 }
 
@@ -38,14 +44,34 @@ function displayHelp() {
       '<devid>'
     )}\texecute the given command on the given device identified by <devid>\n\t\t\tavailable commands: close, down, open, stop, up\n`
   );
-  console.log(`${chalk.white('exit')}              \tterminates the interactive shell\n`);
-  console.log(`${chalk.white('gate')}              \toutputs the gateway url\n`);
-  console.log(`${chalk.white('help')}              \tshows the list of commands\n`);
-  console.log(`${chalk.white('list')}              \tget the list of all devices\n\t\t\t-s can be used to list in short format\n`);
-  console.log(`${chalk.white('load')} ${chalk.red('<id>')}      \t\tlaunch interactive command shell for the given device\n`);
+  console.log(
+    `${chalk.white('exit')}              \tterminates the interactive shell\n`
+  );
+  console.log(
+    `${chalk.white('gate')}              \toutputs the gateway url\n`
+  );
+  console.log(
+    `${chalk.white('help')}              \tshows the list of commands\n`
+  );
+  console.log(
+    `${chalk.white(
+      'list'
+    )}              \tget the list of all devices\n\t\t\t-s can be used to list in short format\n`
+  );
+  console.log(
+    `${chalk.white('load')} ${chalk.red(
+      '<id>'
+    )}      \t\tlaunch interactive command shell for the given device\n`
+  );
   console.log(`${chalk.white('quit')}              \talias to exit\n`);
-  console.log(`${chalk.white('refresh')}           \trefresh the stored list of devices\n`);
-  console.log(`${chalk.white('version')}           \toutputs the cli version to the screen\n`);
+  console.log(
+    `${chalk.white('refresh')}           \trefresh the stored list of devices\n`
+  );
+  console.log(
+    `${chalk.white(
+      'version'
+    )}           \toutputs the cli version to the screen\n`
+  );
 }
 
 function displayDeviceHelp() {
@@ -53,8 +79,12 @@ function displayDeviceHelp() {
   console.log('DEVICE HELP\n');
   // console.log(chalk.yellow(`Mode: DEVICE (${device.deviceURL})\n\n`));
   console.log(`${chalk.white('cmdl')} \tgives out all Somfy device commands\n`);
-  console.log(`${chalk.white('exit')} \tterminates the device interactive shell\n`);
-  console.log(`${chalk.white('help')} \tshows the list of CLI-specific commands\n`);
+  console.log(
+    `${chalk.white('exit')} \tterminates the device interactive shell\n`
+  );
+  console.log(
+    `${chalk.white('help')} \tshows the list of CLI-specific commands\n`
+  );
   console.log(`${chalk.white('quit')} \talias to exit\n`);
 }
 
@@ -73,7 +103,13 @@ function displaySomfyDeviceCommands(device) {
 
   console.log(`${commands.length} commands available for this device:`);
   for (const command of commands) {
-    console.log(`- ${chalk.blue(command.commandName)}${command.nparams > 0 ? chalk.blue(': ') + chalk.yellow(command.paramsSig) : ''}`);
+    console.log(
+      `- ${chalk.blue(command.commandName)}${
+        command.nparams > 0
+          ? chalk.blue(': ') + chalk.yellow(command.paramsSig)
+          : ''
+      }`
+    );
   }
 }
 
@@ -84,7 +120,16 @@ async function displayInteractiveShell() {
 
   while (true) {
     const userInput = prompt(chalk.magenta('shc ') + chalk.blue('$ '), {
-      autocomplete: complete(['exec', 'exit', 'help', 'list', 'load', 'quit', 'refresh', 'version']),
+      autocomplete: complete([
+        'exec',
+        'exit',
+        'help',
+        'list',
+        'load',
+        'quit',
+        'refresh',
+        'version',
+      ]),
     });
 
     const args = userInput.split(' ');
@@ -152,7 +197,9 @@ async function parseCommand(command, args) {
 
       let i = 0;
       for (let device of allDevices) {
-        console.log(`${i++}. ${chalk.blue(device.label)}: ${chalk.green(device.id)}`);
+        console.log(
+          `${i++}. ${chalk.blue(device.label)}: ${chalk.green(device.id)}`
+        );
       }
 
       return 0;
@@ -160,7 +207,9 @@ async function parseCommand(command, args) {
 
     let i = 0;
     for (let device of allDevices) {
-      console.log(`${i++}. ${chalk.blue(device.label)}: ${chalk.green(device.deviceURL)}`);
+      console.log(
+        `${i++}. ${chalk.blue(device.label)}: ${chalk.green(device.deviceURL)}`
+      );
     }
     return 0;
   }
@@ -182,7 +231,9 @@ async function parseCommand(command, args) {
     }
 
     await tahoma.exec(device, cmd);
-    console.log(`Executed '${cmd}' on device ${device.label} ("${device.deviceURL}")`);
+    console.log(
+      `Executed '${cmd}' on device ${device.label} ("${device.deviceURL}")`
+    );
     return 0;
   }
 
@@ -216,9 +267,12 @@ async function parseCommand(command, args) {
 
 async function displayDeviceInteractiveShell(device) {
   while (true) {
-    const userInput = prompt(chalk.magenta(`shc `) + chalk.yellow(`@${device.id} `) + chalk.blue('$ '), {
-      autocomplete: complete(['down', 'exit', 'help', 'quit', 'up']),
-    });
+    const userInput = prompt(
+      chalk.magenta(`shc `) + chalk.yellow(`@${device.id} `) + chalk.blue('$ '),
+      {
+        autocomplete: complete(['down', 'exit', 'help', 'quit', 'up']),
+      }
+    );
 
     const args = userInput.split(' ');
     const command = args.shift();
@@ -241,11 +295,18 @@ async function parseDeviceCommand(device, command, args) {
     return 0;
   }
 
+  let params = [];
+  if (args !== null) {
+    params = args;
+  }
+
   const somfyCommands = getDeviceCommands(device);
   const somfyCmdRef = somfyCommands.find((cmd) => cmd.commandName === command);
   if (somfyCmdRef) {
-    await tahoma.exec(device, command);
-    console.log(`Executed '${command}' on device ${device.label} ("${device.deviceURL}")`);
+    await tahoma.exec(device, command, params);
+    console.log(
+      `Executed '${command}' on device ${device.label} ("${device.deviceURL}")`
+    );
     return 0;
   }
 
