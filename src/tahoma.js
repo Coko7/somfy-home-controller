@@ -83,7 +83,7 @@ export function getState(device, stateName) {
   return device.states.find((s) => s.name === stateName);
 }
 
-export async function exec(device, cmd) {
+export async function exec(device, cmd, params = []) {
   logger.log({
     level: 'info',
     message: `Executing '${cmd}' on "${device.label}"...`,
@@ -96,7 +96,7 @@ export async function exec(device, cmd) {
         commands: [
           {
             name: cmd,
-            parameters: [],
+            parameters: params,
           },
         ],
         deviceURL: device.deviceURL,
@@ -105,7 +105,7 @@ export async function exec(device, cmd) {
   });
 }
 
-export async function execAll(devices, cmd) {
+export async function execAll(devices, cmd, params = []) {
   if (devices.length === 0) return;
 
   const allActions = [];
@@ -114,7 +114,7 @@ export async function execAll(devices, cmd) {
       commands: [
         {
           name: cmd,
-          parameters: [],
+          parameters: params,
         },
       ],
       deviceURL: dev.deviceURL,

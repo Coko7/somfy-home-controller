@@ -61,7 +61,11 @@ async function OpenAllShutters() {
       level: 'info',
       message: `The ☀️ is rising! ${idleClosedShutters.length} shutters are about to open...`,
     });
-    await tahoma.execAll(idleClosedShutters, 'up');
+    // await tahoma.execAll(idleClosedShutters, 'up');
+    await tahoma.execAll(idleClosedShutters, 'setClosureAndLinearSpeed', [
+      0,
+      'lowspeed',
+    ]);
   }
 }
 
@@ -81,7 +85,11 @@ async function CloseAllShutters() {
       level: 'info',
       message: `The 🌙 is lighting up the dark! ${idleOpenShutters.length} shutters are about to be closed...`,
     });
-    await tahoma.execAll(idleOpenShutters, 'down');
+    // await tahoma.execAll(idleOpenShutters, 'down');
+    await tahoma.execAll(idleOpenShutters, 'setClosureAndLinearSpeed', [
+      100,
+      'lowspeed',
+    ]);
   }
 }
 
