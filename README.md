@@ -62,7 +62,12 @@ It is also possible to use a CLI to manually interact with the Tahoma box.
 To launch the CLI, simply enter `npm run cli` in your shell.
 Here is what the latest version of the CLI looks like:
 
-![image](https://github.com/Coko7/somfy-home-controller/assets/91132775/6d2fcec0-5411-46cd-b73c-887b42ac2791)
+![image](https://github.com/Coko7/somfy-home-controller/assets/91132775/7a464624-6d61-4760-a88d-65aaa27432a8)
+
+If you want full control over a device, you should control it via the _device mode_.
+
+You can enter _device mode_ by typing `load <id>` in the general CLI.
+The `<id>` refers to the combination of digits after the gateway pin in the device URL.
 
 ## 📚 Resources
 
