@@ -1,5 +1,33 @@
 {
+  "name": "somfy-home-controller",
+  "version": "1.4.1",
   "type": "module",
+  "description": "Simple Node app to automatically control your Somfy shutters based on your local day cycle.",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "node --experimental-json-modules src/main.js",
+    "cli": "node src/cli.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Coko7/somfy-home-controller.git"
+  },
+  "keywords": [
+    "Somfy",
+    "Home",
+    "Controller",
+    "Tahoma",
+    "Automation",
+    "Daylight",
+    "CLI"
+  ],
+  "author": "Coko7",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Coko7/somfy-home-controller/issues"
+  },
+  "homepage": "https://github.com/Coko7/somfy-home-controller#readme",
   "dependencies": {
     "axios": "^1.2.3",
     "chalk": "^5.3.0",
@@ -15,10 +43,5 @@
     "@babel/preset-env": "^7.20.2",
     "babel-jest": "^29.5.0",
     "jest": "^29.5.0"
-  },
-  "scripts": {
-    "start": "node --experimental-json-modules src/main.js",
-    "cli": "node src/cli.js",
-    "test": "jest"
   }
 }
