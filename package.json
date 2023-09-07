@@ -1,6 +1,6 @@
 {
   "name": "somfy-home-controller",
-  "version": "1.4.1",
+  "version": "1.4.0",
   "type": "module",
   "description": "Simple Node app to automatically control your Somfy shutters based on your local day cycle.",
   "main": "src/main.js",
